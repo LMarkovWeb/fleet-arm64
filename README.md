@@ -345,3 +345,32 @@ docker compose down -v
 ```
 
 unless you intentionally want to delete the named volumes, including Fleet and database data.
+
+## Build the macOS fleetd Package
+
+Create a private temporary folder in the repository root, then download and unpack `fleetctl` 4.95.0 there.
+
+```zsh
+fleetctl_tmp=$(mktemp -d ./fleetctl-native.XXXXXX) && cd "$fleetctl_tmp"
+curl -fLO https://github.com/fleetdm/fleet/releases/download/fleet-v4.95.0/fleetctl_v4.95.0_macos.tar.gz
+tar -xzf fleetctl_v4.95.0_macos.tar.gz --strip-components=1 fleetctl_v4.95.0_macos/fleetctl
+```
+
+Copy the enrollment secret from **Hosts → Add hosts → macOS** and enter it when prompted.
+
+```zsh
+IFS= read -rs 'FLEET_ENROLL_SECRET?Enrollment secret: ' && printf '\n'
+```
+
+Build the package from the same folder.
+
+```zsh
+arch -arm64 ./fleetctl package \
+  --type=pkg --fleet-url=https://localhost:1337 \
+  --enroll-secret="$FLEET_ENROLL_SECRET" --fleet-certificate=../compose/certs/fleet.crt \
+  --disable-open-folder
+```
+
+The output is `fleet-osquery.pkg`. It contains the enrollment secret, so keep it private.
+
+Install it with `sudo installer -pkg ./fleet-osquery.pkg -target /`. Check that the Mac shows **Online** in **Hosts**.

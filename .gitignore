@@ -17,6 +17,7 @@ secrets/
 *.pfx
 *.mobileprovision
 *.kdbx
+*.pkg
 
 # Runtime and private data
 data/
@@ -39,6 +40,10 @@ salt/cache/
 
 # Third-party source code used for local builds
 /src/
+
+# Generated Fleet agent installers
+/compose/fleetctl/output/
+/fleetctl-native.*/
 
 # Locally generated TLS certificates and private keys
 /compose/certs/
