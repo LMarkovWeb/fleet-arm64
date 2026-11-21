@@ -1,0 +1,43 @@
+# syntax=docker/dockerfile:1
+
+FROM --platform=$BUILDPLATFORM node:24-alpine AS frontend
+
+RUN apk add --no-cache make git
+
+WORKDIR /src
+
+RUN corepack enable && corepack prepare yarn@1.22.22 --activate
+
+COPY . .
+RUN yarn install --frozen-lockfile
+RUN make generate-js
+
+FROM --platform=$BUILDPLATFORM golang:1.27.3-alpine AS builder
+WORKDIR /src
+
+RUN apk add --no-cache gcc musl-dev make git
+
+COPY --from=frontend /src /src
+
+RUN make generate-go
+
+ARG TARGETARCH
+ENV CGO_ENABLED=1 GOOS=linux GOARCH=${TARGETARCH}
+
+RUN go build \
+    -p 2 \
+    -tags "full,fts5,netgo" \
+    -trimpath \
+    -ldflags '-s -w -extldflags "-static"' \
+    -o /out/fleet \
+    ./cmd/fleet
+
+FROM alpine:3.23
+RUN apk add --no-cache ca-certificates
+RUN addgroup -S fleet && adduser -S fleet -G fleet
+
+COPY --from=builder /out/fleet /usr/bin/fleet
+
+USER fleet
+EXPOSE 1337
+CMD ["fleet", "serve"]

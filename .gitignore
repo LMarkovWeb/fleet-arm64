@@ -1,0 +1,44 @@
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Local configuration overrides
+*.local
+*.local.*
+*.local.sls
+
+# Secrets and credentials
+secrets/
+*.key
+*.pem
+*.p12
+*.p8
+*.pfx
+*.mobileprovision
+*.kdbx
+
+# Runtime and private data
+data/
+backups/
+logs/
+*.log
+*.sqlite
+*.sqlite3
+
+# Salt runtime
+salt/pki/
+salt/cache/
+
+# macOS
+.DS_Store
+
+# Editors
+.idea/
+.vscode/
+
+# Third-party source code used for local builds
+/src/
+
+# Locally generated TLS certificates and private keys
+/compose/certs/
