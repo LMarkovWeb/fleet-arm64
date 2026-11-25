@@ -6,7 +6,6 @@
 # Local configuration overrides
 *.local
 *.local.*
-*.local.sls
 
 # Secrets and credentials
 secrets/
@@ -27,10 +26,6 @@ logs/
 *.sqlite
 *.sqlite3
 
-# Salt runtime
-salt/pki/
-salt/cache/
-
 # macOS
 .DS_Store
 
@@ -42,7 +37,6 @@ salt/cache/
 /src/
 
 # Generated Fleet agent installers
-/compose/fleetctl/output/
 /fleetctl-native.*/
 
 # Locally generated TLS certificates and private keys
